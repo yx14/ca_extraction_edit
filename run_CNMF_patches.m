@@ -1,4 +1,4 @@
-function [A,b,C,f,S,P,RESULTS,YrA] = run_CNMF_patches(data,K,patches,tau,p,options)
+function [A,b,C,f,S, P, RESULTS,YrA] = run_CNMF_patches(data,K,patches,tau,p,options)
 
 % Run the constrained NMF algorithm on a large dataset by operating on
 % spatially overlapping patches in parallel and then merging the results.
@@ -84,7 +84,6 @@ else
     cl_thr = options.cl_thr;
 end
 
-RESULTS(length(patches)) = struct();
 
 %parfor_progress(length(patches)); %monitor parfor progress (requires parfor_progress from mathworks file exchange)
 parfor i = 1:length(patches)
@@ -116,9 +115,9 @@ parfor i = 1:length(patches)
     %END ADDED
     options_temp.temporal_parallel = 0;
     [C,f,P,S] = update_temporal_components(Yr,A,b,Cin,fin,P,options_temp);
-    [Am,Cm,K_m,merged_ROIs,P,Sm] = merge_components(Yr,A,b,C,f,P,S,options_temp);
+    [Am,Cm,Km,merged_ROIs,P,Sm] = merge_components(Yr,A,b,C,f,P,S,options_temp);
     %[A2,b2,Cm] = update_spatial_components(Yr,Cm,f,Am,P,options_temp);
-    %ADDED sparsify
+    %ADDED sparsify, to speed things up
     for j = 1:size(Am, 2)
         Am(Am(:,j)<th*max(Am(:,j)),j) = 0;
     end
@@ -144,6 +143,7 @@ d = prod(sizY(1:end-1));
 A = sparse(d,length(patches)*K);
 P.sn = zeros(sizY(1:end-1));
 P.active_pixels = zeros(sizY(1:end-1));
+
 IND = zeros(sizY(1:end-1));
 P.b = {};
 P.c1 = {};
@@ -222,6 +222,9 @@ X = spdiags(std(X,[],2)+1e-5,0,size(X,1),size(X,1))\X;
 [~,ind] = min(sum(Cx(max(1,end-49):end,:),1));
 P.active_pixels = (L==ind);
 P.centroids = Cx;
+
+%added
+
 fprintf(' done. \n');
 %% merge results
 fprintf('Merging overlaping components...')
@@ -254,16 +257,15 @@ for iter = 1:150
     bin = max(B*(F*fin')/(fin*fin'),0);
     fin = max((bin'*bin)\(bin'*B)*F,0);
 end
-
-disp('done');
 %% update spatial components
 %ADDED sparsify one last time 
-th = 1e-2;  % for each component set pixels below th*max_value to 0
-for i = 1:K
-    A(A(:,i)<th*max(A(:,i)),i) = 0;
-end
-A = sparse(A);
+%th = 1e-2;  % for each component set pixels below th*max_value to 0
+%for i = 1:K
+%    A(A(:,i)<th*max(A(:,i)),i) = 0;
+%end
+%A = sparse(A);
 
+%{
 for i = 1:K
     ff = length(find(A(:, i)));
     if ff < 100
@@ -272,20 +274,22 @@ for i = 1:K
     S(ff,:) = [];
     end
 end
+%}
 
 %skip update spatial -  too slow 
 %keep this update 
+%%
 fprintf('Updating spatial components...');
 options.d1 = sizY(1);
 options.d2 = sizY(2);
 if length(sizY) == 4; options.d3 = sizY(3); end
 [A,b,C] = update_spatial_components(data,C,fin,A,Pm,options);
 fprintf(' done. \n');
-b = bin; 
+
 % update temporal components
 fprintf('Updating temporal components... ')
 Pm.p = p;
-options.temporal_iter = 2;
+options.temporal_iter = 1;
 [C,f,P,S,YrA] = update_temporal_components(data,A,bin,C,fin,Pm,options);
     
 

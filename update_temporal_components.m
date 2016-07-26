@@ -67,10 +67,7 @@ if ~isfield(options,'temporal_parallel'); options.temporal_parallel = defoptions
 
 if isfield(P,'interp'); Y_interp = P.interp; else Y_interp = sparse(d,T); end        % missing data
 if isfield(P,'unsaturatedPix'); unsaturatedPix = P.unsaturatedPix; else unsaturatedPix = 1:d; end   % saturated pixels
-disp(size(Y)); 
-disp(size(Y_interp));
-disp(class(Y));
-disp(class(Y_interp));
+
 mis_data = find(Y_interp);              % interpolate any missing data before deconvolution
 if ~memmaped 
     Y = double(Y); 
@@ -113,7 +110,7 @@ end
 
 if isempty(Cin) || nargin < 4    % estimate temporal components if missing
     Cin = max((A'*A)\(A'*Y - (A'*b)*fin),0);
-    ITER = max(ITER,3);
+    ITER = max(ITER,1); %3
 end
 
 if  isempty(b) || isempty(fin) || nargin < 5  % re-estimate temporal background

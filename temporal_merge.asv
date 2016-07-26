@@ -17,7 +17,7 @@ corr_m = triu(corr_m) >= thr;
 corr_m = corr_m - diag(diag(corr_m));
 [merge_x, merge_y, ~] = find(corr_m); 
 merge_u = size(merge_x, 1); 
-A_comb = zeros(size(A, 1), size(A, 2));
+A_comb = zeros(size(A));
 C_comb = zeros(size(A, 2) - merge_u, size(C, 2)); 
  
   

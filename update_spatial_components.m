@@ -1,4 +1,4 @@
-function [A,b,C] = update_spatial_components(Y,C,f,A_,P,options)
+function [A,b,C] = update_spatial_components(Y,C,f,A_,P, options)
 
 % update spatial footprints and background through Basis Pursuit Denoising
 % for each pixel i solve the problem 
@@ -25,6 +25,7 @@ function [A,b,C] = update_spatial_components(Y,C,f,A_,P,options)
 
 warning('off', 'MATLAB:maxNumCompThreads:Deprecated');
 memmaped = isobject(Y);
+
 if memmaped
     sizY = size(Y,'Y');
     d = prod(sizY(1:end-1));
@@ -72,7 +73,9 @@ end
 
 Cf = [C;f];
 
-if use_parallel         % solve BPDN problem for each pixel
+if use_parallel       
+    disp('in parallel loop');
+    % solve BPDN problem for each pixel
     Nthr = max(2*maxNumCompThreads,round(d*T/2^24));
     siz_row = [floor(d/Nthr)*ones(Nthr-1,1);d-floor(d/Nthr)*(Nthr-1)];
     indeces = [0;cumsum(siz_row)];
@@ -85,21 +88,26 @@ if use_parallel         % solve BPDN problem for each pixel
     Acell = cell(Nthr,1);
     Psnc = mat2cell(options.sn(:),siz_row,1); 
     Yf = cell(Nthr,1);
+    
     parfor nthr = 1:Nthr
+        disp('ok')
         Acell{nthr} = zeros(siz_row(nthr),size(Cf,1));
         if memmaped
             Ytemp = double(Y.Yr(indeces(nthr)+1:indeces(nthr+1),:));
+            disp('ok2')
         else
             Ytemp = Ycell{nthr};
         end
         Yf{nthr} = Ytemp*f';
+        disp('ok3')
         for px = 1:siz_row(nthr)
             fn = ~isnan(Ytemp(px,:));       % identify missing data
             ind = find(INDc{nthr}(px,:));
             if ~isempty(ind);
                 ind2 = [ind,K+(1:size(f,1))];
-                %[~, ~, a, ~] = lars_regression_noise(Ycell{nthr}(px,fn)', Cf(ind2,fn)', 1, Psnc{nthr}(px)^2*T);
-                [~, ~, a, ~] = lars_regression_noise(Ytemp(px,fn)', Cf(ind2,fn)', 1, Psnc{nthr}(px)^2*T);
+                disp('ok4')
+                [~, ~, a, ~] = lars_regression_noise(Ycell{nthr}(px,fn)', Cf(ind2,fn)', 1, Psnc{nthr}(px)^2*T);
+                disp('ok5')
                 Acell{nthr}(px,ind2) = a';
             end
         end

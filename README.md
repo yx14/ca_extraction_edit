@@ -1,14 +1,3 @@
-The original description of the code is found below. A summary of the changes made for axon segmentation in calcium imaging datasets is added here, and some additional testing datasets are included.  
-
-- The parameters that appear to work best are found under demo_memmap_edit (for example, patches of 70 by 70 pixels, etc).
-
-- Additional sparsity measures between HALS initialization steps and spatial updates.
-
-- Merging of components based on a high temporal correlation threshold following the merging of patch components and the spatiotemporal update.
-
-- The removal of components and additional sorting in order_ROI. Includes pixel thresholds, linearity. 
-
-
 # Deconvolution and demixing of calcium imaging data
 
 [![Join the chat at https://gitter.im/epnev/ca_source_extraction](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/epnev/ca_source_extraction?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
