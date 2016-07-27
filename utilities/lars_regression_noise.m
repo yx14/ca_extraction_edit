@@ -51,12 +51,8 @@ M = -X'*X;            % N x N matrix
 %fprintf('\n i = ');
 i = 1;
 flag = 0;
-
-%ADDED TO STOP THE LOOP 
-
-kiter = 1;
 kcount = 0;
-while kcount < 15 %1
+while kcount < 20
     if flag == 1;
         W_lam = 0;
         break;
@@ -177,7 +173,7 @@ while kcount < 15 %1
     end
 
     
-
+ 
 
 %%  Update weights and lambdas 
         
@@ -200,25 +196,21 @@ while kcount < 15 %1
         active_set(new) = 1;
     end
 
-    
+    kcount = kcount + 1;
     i = i + 1;
-    
-    %ADDED TO STOP THE LOOP
-    kcount = kcount + kiter;
 end
-
 %% end main loop 
-disp(kcount);
-if kcount == 15
+disp(kcount)
+disp(i)
+if kcount == 20
     i = i - 1;
 end
+
 %% final calculation of mus
 if flag == 0
     if i > 1
-        disp('ok6 a');
         Ws= squeeze(Ws(:,:,1:length(lambdas)));
         w_dir = -(Ws(:,i) - Ws(:,i-1))/(lambdas(i)-lambdas(i-1));
-        disp('ok6');
         Aw = X*w_dir;
         y_res = Y - X*(Ws(:,i-1) + w_dir*lambdas(i-1));
         ld = roots([norm(Aw)^2,-2*(Aw'*y_res),y_res'*y_res-noise]);

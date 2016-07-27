@@ -5,9 +5,8 @@ function [A_or,C_or,S_or,P_or,srt] = order_ROIs(A,C,S,P,options, srt)
 % you can also pre-specify the ordering sequence
 
 
-px_min = 100; 
-px_max = 10000; 
-score_arr = zeros(1, size(A, 2) );
+ 
+score_arr = zeros(5, size(A, 2) );
 %remove if round, based on distribution of x and y coordinates 
 %remove if most of the pixels [x, y] in [range(x), range(y)] are filled 
 for i = 1: size(A, 2)
@@ -16,9 +15,26 @@ for i = 1: size(A, 2)
      
     x_val = std(xpos)/range(xpos);
     y_val = std(ypos)/range(ypos);
-    filled = length(xpos); 
-    if( x_val/y_val > 1.1 || x_val/y_val < 0.9 ) && filled*1.0/(range(xpos)*range(ypos)) < 0.5 && filled < px_max && filled > px_min
+    if x_val/y_val > 1.1 || x_val/y_val < 0.9
         score_arr(1, i) = 1;
+    end
+   
+    filled = length(find(res(min(xpos):max(xpos) , min(ypos):max(ypos))));
+    if filled/(range(xpos)*range(ypos)) < 0.5;
+        score_arr(3, i) = 1;
+    end
+    
+                
+end
+
+
+%remove if pixels out of range (px_min, px_max)
+px_min = 100; 
+px_max = 10000; 
+for i = 1: size(A, 2) 
+    [x, ~, ~] = find(A(:, i));
+    if length(x) < px_max && length(x) > px_min
+        score_arr(2, i) =  1;
     end
 end
 
