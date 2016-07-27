@@ -18,15 +18,15 @@ clear;
 %end
 
 %data2 = readtiff('Q:\data\2photon\reg\150911_KS145_2P_KS');
-data2 = readtiff('Q:\data\2photon\reg\160607_KS166_2P_KS\run03_ori12_V1', 1:96);
-%data2 = readtiff('\\nerffs01\mouselab\data\2photon\reg\140808_KS092_2P_KS\run02_ori_ds_V1');
+data2 = readtiff('Q:\data\2photon\reg\160607_KS166_2P_KS\run03_ori12_V1', 1:128);
+%data2 = readtiff('\\nerffs01\mouselab\data\2photon\reg\140808_KS092_2P_KS\run02_ori_ds_V1', 1:96);
 %%
 
 %data is the cropped set of images 
 %temp = imcrop(data2(:, :, 1), [253, 0.5, 261, 414]); first dataset
 %temp = imcrop(data2(:, :, 1), [204,  240,  329,  141] [9,  169,  223,  185]);
-%rect = [9, 169, 223, 185]; 
- temp = imcrop(data2(:, :, 1), rect);
+%rect = [236, 269, 241, 129];
+temp = imcrop(data2(:, :, 1), rect);
 data = zeros(size(temp, 1), size(temp, 2), size(data2, 3)); 
 for i = 1: size(data2, 3)
     temp = imcrop(data2(:, :, i), rect);
@@ -39,15 +39,13 @@ clear data2;
 data = data(:, :, 1:4000); 
 disp('stacked');
 %%
-data = data(1:300, 1:300, :);
+data = data(:, :, 1:8192);
+ 
 
-%%
-data = data2;
-clear data2;
 %% Set parameters
 sizY = size(data);                  % size of data matrix
 patch_size = [70, 70];  %[50]                 % size of each patch along each dimension (optional, default: [32,32])
-overlap = [10,10];  %[15] [10, 10]                      % amount of overlap in each dimension (optional, default: [4,4])
+overlap = [15,15];  %[15] [10, 10]                      % amount of overlap in each dimension (optional, default: [4,4])
 
 patches = construct_patches(sizY(1: end - 1),patch_size,overlap);
 
@@ -76,7 +74,7 @@ options = CNMFSetParms(...
 disp('params updated'); 
 %% Run on patches
 
-[A,b,C,f,S,P ,RESULTS] = run_CNMF_patches(data,K,patches,tau,p,options);
+[A,b,C,f,S,P,RESULTS,YrA] = run_CNMF_patches(data,K,patches,tau,p,options);
 
 % temporal merge (identify multiple components of the same axon based on time alone)
 %create Y with size dxT
@@ -88,8 +86,6 @@ disp('done');
 
 [A_or,C_or,S_or,P] = order_ROIs(A_comb,C_comb,S_comb,P,options); % order components by linearity 
 
-
-
 %% contour 
 contour_threshold = 0.95;                 % amount of energy used for each component to construct contour plot
 figure;
@@ -100,14 +96,11 @@ figure;
 %(A'*Y- (A'*A)*C - (A'*full(b))*f) + C;
 
 Yr2 = double(reshape(data, d1*d2,size(data, 3)));
-Cn2 =  reshape(P.sn,d1,d2);
-clear data2;
-%
+%Cn2 =  reshape(P.sn,d1,d2);
+
 %C_or2 = C_or(:, 1:4096); 
 %C_comb2 = C_comb(:, 1: 4096);
 %f2 = f(1:4096); 
-%Yr3 = Yr2(:, 1:4096);
-
 plot_components_GUI(Yr2,A_or,C_or,b,f,Cn2,options)
 %% cropping coordinates 
 

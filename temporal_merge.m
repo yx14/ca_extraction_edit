@@ -5,7 +5,8 @@ function [A_comb2,C_comb,S_comb,f, P, YrA] = temporal_merge(Y, A,b, C,f, P, opti
 
 %outputs: 
 %A_comb2 is A with components merged and others removed
-%updates temporal components for new C and S 
+%C and S just keep the components from merge_x, NEED TO FIX: track components from
+%merge_y 
 
 thr = options.thr2; 
 nr = size(A, 2); 
@@ -16,7 +17,8 @@ corr_m = triu(corr_m) >= thr;
 %remove diagonal
 corr_m = corr_m - diag(diag(corr_m));
 [merge_x, merge_y, ~] = find(corr_m); 
-merge_u = size(merge_x, 1); 
+merge_t = unique(merge_x);
+merge_u = size(merge_t, 1); 
 A_comb = zeros(size(A, 1), size(A, 2));
 C_comb = zeros(size(A, 2) - merge_u, size(C, 2)); 
  
