@@ -200,8 +200,7 @@ while kcount < 20
     i = i + 1;
 end
 %% end main loop 
-disp(kcount)
-disp(i)
+ 
 if kcount == 20
     i = i - 1;
 end

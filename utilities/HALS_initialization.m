@@ -32,7 +32,7 @@ elseif strcmpi(init_hals_method,'cor_im');
     K = sum(BW(:));
 end
 
-max_iter_hals_in = 400;
+max_iter_hals_in = 200;
 for iter = 1:max_iter_hals_in
     A = HALS_spatial(Y, A, C);
     %sparsify
