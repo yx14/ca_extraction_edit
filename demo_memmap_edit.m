@@ -18,7 +18,7 @@ clear;
 %end
 
 %data2 = readtiff('Q:\data\2photon\reg\150911_KS145_2P_KS');
-data2 = readtiff('Q:\data\2photon\reg\160607_KS166_2P_KS\run03_ori12_V1', 1:128);
+data2 = readtiff('Q:\data\2photon\reg\160607_KS166_2P_KS\run03_ori12_V1', 1:64);
 %data2 = readtiff('\\nerffs01\mouselab\data\2photon\reg\140808_KS092_2P_KS\run02_ori_ds_V1', 1:96);
 %%
 
@@ -39,8 +39,8 @@ clear data2;
 data = data(:, :, 1:4000); 
 disp('stacked');
 %%
-data = data(:, :, 1:8192);
- 
+data = data2(150:450, 200:500, 1:8192);
+clear data2;
 
 %% Set parameters
 sizY = size(data);                  % size of data matrix
@@ -95,8 +95,8 @@ figure;
 %% display components
 %(A'*Y- (A'*A)*C - (A'*full(b))*f) + C;
 
-Yr2 = double(reshape(data, d1*d2,size(data, 3)));
-%Cn2 =  reshape(P.sn,d1,d2);
+Yr2 = double(reshape(data, options.d1*options.d2,size(data, 3)));
+Cn2 =  reshape(P.sn,d1,d2);
 
 %C_or2 = C_or(:, 1:4096); 
 %C_comb2 = C_comb(:, 1: 4096);

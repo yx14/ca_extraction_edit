@@ -145,7 +145,7 @@ A = [A(:,1:nr),A_merged,A(:,nr+1:end)];
 C = [C(1:nr,:);C_merged;C(nr+1:end,:)];
 A(:,neur_id) = [];
 C(neur_id,:) = [];
-
+ 
 if nargin < 7
     S = [];
     if nargout == 6
@@ -156,6 +156,8 @@ else
     S(neur_id,:) = [];
 end
 
+temp_str = num2str(length(neur_id));
+disp([temp_str, ' components merged']);
 if strcmpi(options.deconv_method,'constrained_foopsi') || strcmpi(options.deconv_method,'MCEM_foopsi')
     P.b(neur_id) = [];
     P.b(nr - length(neur_id) + (1:nm)) = P_merged.b;

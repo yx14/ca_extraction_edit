@@ -18,13 +18,14 @@ clear;
 %end
 
 %data2 = readtiff('Q:\data\2photon\reg\150911_KS145_2P_KS');
-%data2 = readtiff('Q:\data\2photon\reg\160607_KS166_2P_KS\run03_ori12_V1', 1:96);
-data2 = readtiff('\\nerffs01\mouselab\data\2photon\reg\140808_KS092_2P_KS\run02_ori_ds_V1', 1:32);
+data2 = readtiff('Q:\data\2photon\reg\160607_KS166_2P_KS\run03_ori12_V1', 1:64);
+%data2 = readtiff('\\nerffs01\mouselab\data\2photon\reg\140808_KS092_2P_KS\run02_ori_ds_V1', 1:96);
 %%
 
 %data is the cropped set of images 
 %temp = imcrop(data2(:, :, 1), [253, 0.5, 261, 414]); first dataset
 %temp = imcrop(data2(:, :, 1), [204,  240,  329,  141] [9,  169,  223,  185]);
+%rect = [236, 269, 241, 129];
 temp = imcrop(data2(:, :, 1), rect);
 data = zeros(size(temp, 1), size(temp, 2), size(data2, 3)); 
 for i = 1: size(data2, 3)
@@ -38,7 +39,8 @@ clear data2;
 data = data(:, :, 1:4000); 
 disp('stacked');
 %%
-data = data(1:50, 1:50, 1:4096);
+data = data(:, :, 1:8192);
+ 
 
 %% Set parameters
 sizY = size(data);                  % size of data matrix
@@ -49,7 +51,7 @@ patches = construct_patches(sizY(1: end - 1),patch_size,overlap);
 
 d1 = sizY(1);
 d2 = sizY(2);
-K = 15;                                           % number of components to be found
+K = 8;                                           % number of components to be found
 tau = 2;                                          % std of gaussian kernel (size of neuron) 
 p = 2;                                            % order of autoregressive system (p = 0 no dynamics, p=1 just decay, p = 2, both rise and decay)
 merge_thr = 0.75;                                  % merging threshold
@@ -94,12 +96,11 @@ figure;
 %(A'*Y- (A'*A)*C - (A'*full(b))*f) + C;
 
 Yr2 = double(reshape(data, d1*d2,size(data, 3)));
-Cn2 =  reshape(P.sn,d1,d2);
+%Cn2 =  reshape(P.sn,d1,d2);
 
-C_or2 = C_or(:, 1:4096); 
-C_comb2 = C_comb(:, 1: 4096);
-f2 = f(1:4096); 
-Yr3 = Yr2(:, 1:4096);
+%C_or2 = C_or(:, 1:4096); 
+%C_comb2 = C_comb(:, 1: 4096);
+%f2 = f(1:4096); 
 plot_components_GUI(Yr2,A_or,C_or,b,f,Cn2,options)
 %% cropping coordinates 
 

@@ -116,6 +116,7 @@ parfor i = 1:length(patches)
     %END ADDED
     options_temp.temporal_parallel = 0;
     [C,f,P,S] = update_temporal_components(Yr,A,b,Cin,fin,P,options_temp);
+    %{
     [Am,Cm,K_m,merged_ROIs,P,Sm] = merge_components(Yr,A,b,C,f,P,S,options_temp);
     %[Am,b2,Cm] = update_spatial_components(Yr,Cm,f,Am,P,options_temp);
     %ADDED sparsify
@@ -127,6 +128,15 @@ parfor i = 1:length(patches)
     %END ADDED
     P.p = p;
     [C2,f2,P2,S2] = update_temporal_components(Yr,A2,b2,Cm,f,P,options_temp);
+    %}
+    %ADDED
+    A2 = A;
+    C2 = C;
+    b2 = b;
+    f2 = f;
+    P2 = P;
+    S2 = S;
+    %END ADDED
     RESULTS(i).A = A2;
     RESULTS(i).C = C2;
     RESULTS(i).b = b2;
@@ -273,7 +283,7 @@ for i = 1:K
     end
 end
 
-%skip update spatial -  too slow 
+
 %keep this update 
 fprintf('Updating spatial components...');
 options.d1 = sizY(1);

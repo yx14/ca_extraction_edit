@@ -49,6 +49,7 @@ end
 %update temporal components
 disp(size(A_comb2));
 disp(size(C_comb));
+options.temporal_iter = 2;
 [C_comb,f,P,S_comb,YrA] = update_temporal_components(Y,A_comb2,b,C_comb,f,P,options);
 
 disp(merge_u);
