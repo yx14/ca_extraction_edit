@@ -87,6 +87,7 @@ end
 RESULTS(length(patches)) = struct();
 
 %parfor_progress(length(patches)); %monitor parfor progress (requires parfor_progress from mathworks file exchange)
+%change to for?
 parfor i = 1:length(patches)
     if length(sizY) == 3
         Y = data.Y(patches{i}(1):patches{i}(2),patches{i}(3):patches{i}(4),:);
@@ -114,7 +115,7 @@ parfor i = 1:length(patches)
     A = sparse(Ain);
     b = bin;
     %END ADDED
-    options_temp.temporal_parallel = 0;
+     
     [C,f,P,S] = update_temporal_components(Yr,A,b,Cin,fin,P,options_temp);
     %{
     [Am,Cm,K_m,merged_ROIs,P,Sm] = merge_components(Yr,A,b,C,f,P,S,options_temp);
@@ -288,6 +289,7 @@ end
 fprintf('Updating spatial components...');
 options.d1 = sizY(1);
 options.d2 = sizY(2);
+ 
 if length(sizY) == 4; options.d3 = sizY(3); end
 [A,b,C] = update_spatial_components(data,C,fin,A,Pm,options);
 fprintf(' done. \n');
@@ -297,7 +299,7 @@ fprintf('Updating temporal components... ')
 Pm.p = p;
 options.temporal_iter = 2;
 [C,f,P,S,YrA] = update_temporal_components(data,A,bin,C,fin,Pm,options);
-    
+ 
 
 
 fprintf(' done. \n');

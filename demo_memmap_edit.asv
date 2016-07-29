@@ -39,8 +39,8 @@ clear data2;
 data = data(:, :, 1:4000); 
 disp('stacked');
 %%
-data = data(:, :, 1:8192);
- 
+data = data2(150:450, 200:500, 1:8192);
+clear data2;
 
 %% Set parameters
 sizY = size(data);                  % size of data matrix
@@ -75,7 +75,7 @@ disp('params updated');
 %% Run on patches
 
 [A,b,C,f,S,P,RESULTS,YrA] = run_CNMF_patches(data,K,patches,tau,p,options);
-
+%%
 % temporal merge (identify multiple components of the same axon based on time alone)
 %create Y with size dxT
 data_res = reshape(data, [options.d1*options.d2, size(data, 3)]); 
@@ -83,7 +83,7 @@ data_res = reshape(data, [options.d1*options.d2, size(data, 3)]);
 disp('done'); 
 
 % order and plot
-
+%%
 [A_or,C_or,S_or,P] = order_ROIs(A_comb,C_comb,S_comb,P,options); % order components by linearity 
 
 %% contour 
@@ -95,8 +95,8 @@ figure;
 %% display components
 %(A'*Y- (A'*A)*C - (A'*full(b))*f) + C;
 
-Yr2 = double(reshape(data, d1*d2,size(data, 3)));
-%Cn2 =  reshape(P.sn,d1,d2);
+Yr2 = double(reshape(data, options.d1*options.d2,size(data, 3)));
+Cn2 =  reshape(P.sn,d1,d2);
 
 %C_or2 = C_or(:, 1:4096); 
 %C_comb2 = C_comb(:, 1: 4096);

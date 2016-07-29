@@ -63,7 +63,7 @@ if ~isfield(options,'restimate_g') || isempty(options.restimate_g); restimate_g 
 if ~isfield(options,'temporal_iter') || isempty(options.temporal_iter); ITER = defoptions.temporal_iter; else ITER = options.temporal_iter; end           % number of block-coordinate descent iterations
 if ~isfield(options,'bas_nonneg'); options.bas_nonneg = defoptions.bas_nonneg; end
 if ~isfield(options,'fudge_factor'); options.fudge_factor = defoptions.fudge_factor; end
-if ~isfield(options,'temporal_parallel'); options.temporal_parallel = defoptions.temporal_parallel; end
+if ~isfield(options,'temporal_parallel'); options.temporal_parallel = defoptions.temporal_parallel; end %as specified
 
 if isfield(P,'interp'); Y_interp = P.interp; else Y_interp = sparse(d,T); end        % missing data
 if isfield(P,'unsaturatedPix'); unsaturatedPix = P.unsaturatedPix; else unsaturatedPix = 1:d; end   % saturated pixels

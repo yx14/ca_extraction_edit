@@ -37,7 +37,7 @@ if ~isfield(options,'d1') || isempty(options.d1); d1 = input('What is the total 
 if ~isfield(options,'d2') || isempty(options.d2); d2 = input('What is the total number of columns? \n'); options.d2 = d2; else d2 = options.d2; end          % # of columns
 if ~isfield(options,'show_sum'); show_sum = 0; else show_sum = options.show_sum; end            % do some plotting while calculating footprints
 if ~isfield(options,'interp'); Y_interp = sparse(d,T); else Y_interp = options.interp; end      % identify missing data
-if ~isfield(options,'use_parallel'); use_parallel = ~isempty(which('parpool')); else use_parallel = options.use_parallel; end % use parallel toolbox if present
+if ~isfield(options,'use_parallel'); use_parallel = ~isempty(which('parpool')); else use_parallel = options.use_parallel;  end % use parallel toolbox if specified
 if ~isfield(options,'search_method'); method = []; else method = options.search_method; end     % search method for determining footprint of spatial components
 
 if nargin < 2 || (isempty(A_) && isempty(C))  % at least either spatial or temporal components should be provided
@@ -71,7 +71,7 @@ if ~memmaped
 end
 
 Cf = [C;f];
-
+disp(['using parallel', num2str(use_parallel)])
 if use_parallel         % solve BPDN problem for each pixel
     Nthr = max(2*maxNumCompThreads,round(d*T/2^24));
     siz_row = [floor(d/Nthr)*ones(Nthr-1,1);d-floor(d/Nthr)*(Nthr-1)];
@@ -97,7 +97,7 @@ if use_parallel         % solve BPDN problem for each pixel
             fn = ~isnan(Ytemp(px,:));       % identify missing data
             ind = find(INDc{nthr}(px,:));
             if ~isempty(ind);
-                disp('this is patches and its passing to the GPU' )
+                
                 ind2 = [ind,K+(1:size(f,1))];
                 %Ytest = gpuArray(Ytemp(px, fn)');
                 %Cftest = gpuArray(Cf(ind2, fn)');

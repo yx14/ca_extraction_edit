@@ -83,7 +83,6 @@ data_res = reshape(data, [options.d1*options.d2, size(data, 3)]);
 disp('done'); 
 
 % order and plot
-
 [A_or,C_or,S_or,P] = order_ROIs(A_comb,C_comb,S_comb,P,options); % order components by linearity 
 
 %% contour 
