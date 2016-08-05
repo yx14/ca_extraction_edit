@@ -12,13 +12,14 @@ score_arr = zeros(5, size(A, 2) );
 for i = 1: size(A, 2)
     res = reshape(A(:, i), [options.d1, options.d2]); 
     [xpos, ypos, ~] = find(res); 
-     
+    
+    %{
     x_val = std(xpos)/range(xpos);
     y_val = std(ypos)/range(ypos);
     if x_val/y_val > 1.1 || x_val/y_val < 0.9
         score_arr(1, i) = 1;
     end
-   
+    %}
     filled = length(find(res(min(xpos):max(xpos) , min(ypos):max(ypos))));
      
     t1 = max(range(xpos), 1);
@@ -44,11 +45,10 @@ end
 
 %remove components, assuming there's at least one 'real' axon 
  
-disp( size(C, 1));
-disp( length(score_arr));
-A(:, sum(score_arr) < 3) = []; 
-C(sum(score_arr) < 3, :) = [];
-S(sum(score_arr) < 3, :) = []; 
+ 
+A(:, sum(score_arr) < 2) = []; 
+C(sum(score_arr) < 2, :) = [];
+S(sum(score_arr) < 2, :) = []; 
 
 
 %reshape A to d1*d2*T;  

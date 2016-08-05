@@ -58,9 +58,7 @@ set(gcf,'Position',2*[300,300,960,480]);
 set(gcf,'PaperPosition',2*[300,300,960,480]);
 int_x = zeros(nr,2*sx);
 int_y = zeros(nr,2*sx);
-disp(size(A));
-disp(d1);
-disp(d2);
+
 cm = com(A,d1,d2);
 
 
@@ -117,7 +115,7 @@ plot_component(1)
 
     function plot_component(i)
        if i <= nr
-            subplot(3,2,5);
+            subplot(4,2,[5, 7]);
             Atemp = reshape(A(:,i),d1,d2);
             int_x(i,:) = round(cm(i,1)) + (-(sx-1):sx);
             if int_x(i,1)<1
@@ -136,7 +134,7 @@ plot_component(1)
             Atemp = Atemp(int_x(i,:),int_y(i,:));
             imagesc(int_x(i,:),int_y(i,:),Atemp); axis square;
         end
-        subplot(3,2,[1,3]);
+        subplot(4,2,[1, 3]);
         if i <= nr
             cla
             imagesc(2*Cn); axis equal; axis tight; axis off; hold on;
