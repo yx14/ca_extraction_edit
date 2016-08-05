@@ -156,8 +156,7 @@ else
     S(neur_id,:) = [];
 end
 
-temp_str = num2str(length(neur_id));
-disp([temp_str, ' components merged']);
+
 if strcmpi(options.deconv_method,'constrained_foopsi') || strcmpi(options.deconv_method,'MCEM_foopsi')
     P.b(neur_id) = [];
     P.b(nr - length(neur_id) + (1:nm)) = P_merged.b;

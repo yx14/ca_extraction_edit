@@ -106,44 +106,52 @@ parfor i = 1:length(patches)
     Yr = reshape(Y,d,T);
     %clear Y;
     options_temp.use_parallel = 0; % turn off parallel updating for spatial components
+     
     [A,b,Cin] = update_spatial_components(Yr,Cin,fin,Ain,P,options_temp);
     th = 1e-2;  % for each component set pixels below th*max_value to 0
+    
     %ADDED, sparsify in addition to update spatial
-    for j = 1:size(Ain, 2)
-        Ain(Ain(:,j)<th*max(Ain(:,j)),j) = 0;
+    for j = 1:size(A, 2)
+        A(A(:,j)<th*max(A(:,j)),j) = 0;
     end
-    A = sparse(Ain);
-    b = bin;
+    A = sparse(A);
+    
     %END ADDED
-     
+    options_temp.temporal_parallel = 0;
     [C,f,P,S] = update_temporal_components(Yr,A,b,Cin,fin,P,options_temp);
-    %{
-    [Am,Cm,K_m,merged_ROIs,P,Sm] = merge_components(Yr,A,b,C,f,P,S,options_temp);
-    %[Am,b2,Cm] = update_spatial_components(Yr,Cm,f,Am,P,options_temp);
+    
+    %[Am,Cm,K_m,merged_ROIs,P,Sm] = merge_components(Yr,A,b,C,f,P,S,options_temp);
+    
+   
+    [Am,b2,Cm] = update_spatial_components(Yr,C,f,A,P,options_temp);
     %ADDED sparsify
+    %{
     for j = 1:size(Am, 2)
         Am(Am(:,j)<th*max(Am(:,j)),j) = 0;
     end
-    A2 = sparse(Am);
-    b2 = b;
-    %END ADDED
-    P.p = p;
-    [C2,f2,P2,S2] = update_temporal_components(Yr,A2,b2,Cm,f,P,options_temp);
+    Am = sparse(Am);
     %}
-    %ADDED
-    A2 = A;
-    C2 = C;
-    b2 = b;
-    f2 = f;
-    P2 = P;
-    S2 = S;
-    %END ADDED
-    RESULTS(i).A = A2;
+    P.p = p;
+   
+    [C2,f2,P2,S2] = update_temporal_components(Yr,Am,b2,Cm,f,P,options_temp);
+     
+    
+ 
+    RESULTS(i).A = Am;
     RESULTS(i).C = C2;
     RESULTS(i).b = b2;
     RESULTS(i).f = f2;
     RESULTS(i).S = S2;
     RESULTS(i).P = P2;
+    
+    %{
+    RESULTS(i).A = A;
+    RESULTS(i).C = C;
+    RESULTS(i).b = b;
+    RESULTS(i).f = f;
+    RESULTS(i).S = S;
+    RESULTS(i).P = P;
+    %}
     fprintf(['Finished processing patch # ',num2str(i),' out of ',num2str(length(patches)), '.\n']);
     %parfor_progress;
 end
@@ -298,6 +306,7 @@ b = bin;
 fprintf('Updating temporal components... ')
 Pm.p = p;
 options.temporal_iter = 2;
+options.temporal_parallel = 0;
 [C,f,P,S,YrA] = update_temporal_components(data,A,bin,C,fin,Pm,options);
  
 

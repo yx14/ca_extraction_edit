@@ -71,7 +71,7 @@ if ~memmaped
 end
 
 Cf = [C;f];
-disp(['using parallel', num2str(use_parallel)])
+
 if use_parallel         % solve BPDN problem for each pixel
     Nthr = max(2*maxNumCompThreads,round(d*T/2^24));
     siz_row = [floor(d/Nthr)*ones(Nthr-1,1);d-floor(d/Nthr)*(Nthr-1)];

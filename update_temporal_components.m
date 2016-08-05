@@ -67,10 +67,7 @@ if ~isfield(options,'temporal_parallel'); options.temporal_parallel = defoptions
 
 if isfield(P,'interp'); Y_interp = P.interp; else Y_interp = sparse(d,T); end        % missing data
 if isfield(P,'unsaturatedPix'); unsaturatedPix = P.unsaturatedPix; else unsaturatedPix = 1:d; end   % saturated pixels
-disp(size(Y)); 
-disp(size(Y_interp));
-disp(class(Y));
-disp(class(Y_interp));
+
 mis_data = find(Y_interp);              % interpolate any missing data before deconvolution
 if ~memmaped 
     Y = double(Y); 
@@ -180,6 +177,7 @@ else
     end
 end
 p = P.p;
+disp(['temporal update is ', num2str(options.temporal_parallel)])
 if options.temporal_parallel
     for iter = 1:ITER
         [O,lo] = update_order(A(:,1:K));
