@@ -47,6 +47,7 @@ else
     Df = ones(size(A,2)+1,1);
 end
 
+disp(Df);
 if save_avi
     vidObj = VideoWriter([name,'.avi']);
     set(vidObj,'FrameRate',1);
@@ -61,18 +62,9 @@ int_y = zeros(nr,2*sx);
 
 cm = com(A,d1,d2);
 
-
-
-
-
-
-
-
 % Create a figure and axes
 
 % ax = axes('Units','DF/F');
-
-
 
 % Create slider
 sld = uicontrol('Style', 'slider',...

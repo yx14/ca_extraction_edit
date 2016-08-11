@@ -1,59 +1,50 @@
-function [A_or,C_or,S_or,P_or,srt] = order_ROIs(A,C,S,P,options, srt)
+function [A_or,C_or,S_or,P_or,srt] = order_ROIs(Y,A,C,b, f, S,P,options, srt)
 
 % ordering of the found components based on their maximum temporal
 % activation and their size (through their l_inf norm)
 % you can also pre-specify the ordering sequence
-
-
+if ~isfield(options,'px_min') || isempty(options.px_min); px_min = 100; else px_min = options.px_min;    end    % # of rows
+if ~isfield(options, 'px_max') || isempty(options.px_max); px_max = 10000; else px_max = options.px_max; end
+if ~isfield(options, 'max_df_f') || isempty(options.max_df_f); df_f = 1.; else df_f = options.max_df_f; end
  
-score_arr = zeros(5, size(A, 2) );
-%remove if round, based on distribution of x and y coordinates 
-%remove if most of the pixels [x, y] in [range(x), range(y)] are filled 
+score_arr = zeros(1, size(A, 2) );
+%Conditions for removal:
+%1. if the component fills more than 50% of the rectangular area (formed by
+%range of x and y coordinates)
+%2. if the components' pixel number is out of the range [px_min, px_max]
+%3. if the max Df/F value is smaller than 1
+px_min = 50;
+px_max = 10000;
+nA = sqrt(sum(A.^2))';
+[K,~] = size(C);
+A_temp = A/spdiags(nA,0,K,K);    % normalize spatial components to unit energy
+C_temp = spdiags(nA,0,K,K)*C;
+[~,Df] = extract_DF_F(Y,[A_temp,b],[C_temp;f],size(A_temp,2)+1);
+ 
 for i = 1: size(A, 2)
+    %1 and 2.
     res = reshape(A(:, i), [options.d1, options.d2]); 
     [xpos, ypos, ~] = find(res); 
-    
-    %{
-    x_val = std(xpos)/range(xpos);
-    y_val = std(ypos)/range(ypos);
-    if x_val/y_val > 1.1 || x_val/y_val < 0.9
-        score_arr(1, i) = 1;
-    end
-    %}
     filled = length(find(res(min(xpos):max(xpos) , min(ypos):max(ypos))));
-     
     t1 = max(range(xpos), 1);
     t2 = max(range(ypos), 1);
-    
-    if ~(isempty(t1) || isempty(t2)) && filled/(t1*t2) < 0.5;
-        score_arr(3, i) = 1;
-    end
-    
-                
+    %3. 
+    df_f = C_temp(i,:)/Df(i);
+    %Conditions, in order. 
+    if ~(isempty(t1) || isempty(t2)) && filled/(t1*t2) < 0.5 && length(xpos) < px_max && length(xpos) > px_min && max(df_f) > 1
+        score_arr(1, i) = 1;
+    end  
 end
 
+%remove components, assumes at least one 'real' axon 
+A(:, score_arr < 1) = []; 
+C(score_arr < 1, :) = [];
+S(score_arr < 1, :) = []; 
 
-%remove if pixels out of range (px_min, px_max)
-px_min = 100; 
-px_max = 10000; 
-for i = 1: size(A, 2) 
-    [x, ~, ~] = find(A(:, i));
-    if length(x) < px_max && length(x) > px_min
-        score_arr(2, i) =  1;
-    end
-end
-
-%remove components, assuming there's at least one 'real' axon 
- 
- 
-A(:, sum(score_arr) < 2) = []; 
-C(sum(score_arr) < 2, :) = [];
-S(sum(score_arr) < 2, :) = []; 
-
-
+%order by linearity, spatial and temporal activity
 %reshape A to d1*d2*T;  
 A_or3 = reshape(full(A), [options.d1, options.d2, size(A, 2)]);
-%calculate the R^2 values of x and y
+%calculate the R^2 values of x and y - "linearity"
 r_vals = zeros(size(A, 2), 1); 
 for i = 1: size(A, 2);
     A_vec = A_or3(:, :, i);
@@ -92,13 +83,6 @@ if nargin < 4
     P_or = [];
 else
     P_or = P;
-    %JUST FOR NOW 
-    %{
-    if isfield(P,'gn'); P_or.gn=P.gn(srt); end
-    if isfield(P,'b'); P_or.b=P.b(srt); end
-    if isfield(P,'c1'); P_or.c1=P.c1(srt); end
-    if isfield(P,'neuron_sn'); P_or.neuron_sn=P.neuron_sn(srt); end
-    %}
 end
 
 if nargin < 3 || isempty(S)
