@@ -1,5 +1,5 @@
 %%
-function plot_components_GUI(Y,A,C,b,f,Cn,options)
+function plot_components_GUI(Y,A,C,b,f, Cn,options)
 defoptions = CNMFSetParms;
 if nargin < 7 || isempty(options); options = []; end
 if ~isfield(options,'d1') || isempty(options.d1); d1 = input('What is the total number of rows? \n'); else d1 = options.d1; end          % # of rows
@@ -47,7 +47,6 @@ else
     Df = ones(size(A,2)+1,1);
 end
 
-disp(Df);
 if save_avi
     vidObj = VideoWriter([name,'.avi']);
     set(vidObj,'FrameRate',1);

@@ -1,4 +1,4 @@
-function [A_or,C_or,S_or,P_or,srt] = order_ROIs(Y,A,C,b, f, S,P,options, srt)
+function [A_or,C_or,S_or, P_or,srt] = order_ROIs(Y,A,C,b, f, S,P,options, srt)
 
 % ordering of the found components based on their maximum temporal
 % activation and their size (through their l_inf norm)
@@ -37,8 +37,13 @@ for i = 1: size(A, 2)
 end
 
 %remove components, assumes at least one 'real' axon 
-A(:, score_arr < 1) = []; 
-C(score_arr < 1, :) = [];
+
+Atemp = A(:, score_arr < 1); 
+Ctemp = C(score_arr < 1, :);
+Stemp = S(score_arr < 1, :); 
+
+A(:, score_arr < 1) = [];
+C(score_arr < 1, :) = []; 
 S(score_arr < 1, :) = []; 
 
 %order by linearity, spatial and temporal activity
@@ -79,6 +84,7 @@ end
 
 A_or = A(:,srt);
 C_or = C(srt,:);
+ 
 if nargin < 4
     P_or = [];
 else
@@ -89,4 +95,10 @@ if nargin < 3 || isempty(S)
     S_or = [];
 else
     S_or = S(srt,:);
+    
+A_or = horzcat(A_or, Atemp);
+C_or = vertcat(C_or, Ctemp);
+S_or = vertcat(S_or, Stemp);
+len = length(srt); 
+disp([num2str(len), ' components have been sorted.']); 
 end
