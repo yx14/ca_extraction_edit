@@ -256,7 +256,7 @@ C = Cm(ff,:);
 %% compute spatial and temporal background using a rank-1 fit
 disp('starting background computing...');
 fin = [mean(F);rand(gnb-1,length(F))];
-
+%ADDED
 bin = max(B*(F*fin')/(fin*fin'),0);
 for iter = 1:150
     fin = diag(sqrt(sum(fin.^2,2)))\fin;
@@ -267,7 +267,7 @@ end
 disp('done');
 %% update spatial components
 %{
-%%remove components that are too small here to speed up the update 
+
 for i = 1:K
     ff = length(find(A(:, i)));
     if ff < 100
@@ -286,10 +286,11 @@ if length(sizY) == 4; options.d3 = sizY(3); end
 [A,b,C] = update_spatial_components(data,C,fin,A,Pm,options);
 fprintf(' done. \n');
 
+
 % update temporal components
 fprintf('Updating temporal components... ')
 Pm.p = p;
 options.temporal_iter = 2;
-[C,f,P,S,YrA] = update_temporal_components(data,A,b,C,fin,Pm,options);
+[C,f,P,S,YrA] = update_temporal_components(data,A,bin,C,fin,Pm,options);
 
 fprintf(' done. \n');

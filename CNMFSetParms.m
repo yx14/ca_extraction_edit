@@ -95,6 +95,10 @@ Names = [
     'nfr                ' % number of consecutive frames (default: 3)
     % TEMPORAL MERGE
     'thr2               ' % correlation threshold for temporal merging alone 
+    % ORDER ROIS
+    'px_min             ' % min number of pixels for an ordered component
+    'px_max             ' % max number of pixels for an ordered component
+    'max_df_f           ' % highest Df/F peak must exceed max_df_f for an ordered component
     ];
 
 
@@ -264,6 +268,10 @@ Values = [
     {5}
     % TEMPORAL MERGE 
     (0.9)
+    % ORDER ROI
+    (100)
+    (10000)
+    (1)
     ];
 
 for j = 1:m

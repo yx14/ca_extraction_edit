@@ -177,7 +177,7 @@ else
     end
 end
 p = P.p;
-disp(['temporal update is ', num2str(options.temporal_parallel)])
+
 if options.temporal_parallel
     for iter = 1:ITER
         [O,lo] = update_order(A(:,1:K));
