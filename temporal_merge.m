@@ -36,14 +36,12 @@ for i = 1: size(A, 2)
 end
 merge_ct = 1;
 A_comb2 = zeros(size(A, 1), size(A, 2) - merge_u);
-disp(size(A_comb2));
-disp(size(C_comb));
+ 
 %A_comb2 drops merge_y components 
 for i = 1: size(A, 2) 
     if ~any(i == merge_y)
         A_comb2(:, merge_ct) = A_comb(:, i);
         %initialize with the first component's temporal footprint and update
-        %afterward 
         C_comb(merge_ct, :) = C(i, :);
         merge_ct = merge_ct + 1; 
     end
@@ -58,8 +56,7 @@ options.temporal_iter = 1;
 ff = find(sum(A_comb2)==0);
 if ~isempty(ff)
     A_comb2(:,ff) = [];
-disp(size(C_comb));
-disp(size(A_comb2));
+ 
 
-disp('done 2');
+ 
 end

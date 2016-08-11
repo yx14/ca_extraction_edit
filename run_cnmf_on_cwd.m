@@ -45,7 +45,7 @@ options = CNMFSetParms(...
     'gSig',tau, ...
     'px_min', 100, ... %minimum number of pixels for an ordered component
     'px_max', 10000, ... %maximum number of pixels for an ordered component
-    'max_df_f', 1 ... %highest Df/F peak must exceed max_df_f for an ordered component
+    'max_df_f', 0.75 ... %highest Df/F peak must exceed max_df_f for an ordered component
     );
 disp('params updated'); 
 
@@ -54,7 +54,7 @@ disp('params updated');
 [A,b,C,f,S,P,RESULTS,YrA] = run_CNMF_patches(data,K,patches,tau,p,options); 
 
 % temporal merge (identify multiple components of the same axon based on time alone)
-%create Y with size dxT
+% create Y with size dxT
 data_res = reshape(data, [options.d1*options.d2, size(data, 3)]); 
 [A_comb, C_comb, S_comb, f, P, YrA] = temporal_merge(data_res, A, b, C, f, P, options); 
 disp('done'); 

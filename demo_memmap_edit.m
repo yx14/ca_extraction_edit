@@ -87,7 +87,7 @@ data_res = reshape(data, [options.d1*options.d2, size(data, 3)]);
 disp('done'); 
 
 %% order and plot
-[A_or,C_or,S_or,P] = order_ROIs(data_res, A_comb,C_comb,b, f, S_comb,P,options); % order components by linearity 
+[A_or,C_or,S_or, P, srt] = order_ROIs(data_res, A_comb,C_comb,b, f, S_comb,P,options); % order components by linearity 
 
 %% contour 
 contour_threshold = 0.95;                 % amount of energy used for each component to construct contour plot
@@ -97,7 +97,10 @@ figure;
 
 %% display components
 Cn2 = reshape(P.sn,d1,d2);
-plot_components_GUI(double(data_res),A_or,C_or,b,f,Cn2,options)
+
+%length(srt) gives the number of ordered components. The figures with a larger component number than length(srt) are probably
+%noise/not axons.
+plot_components_GUI(double(data_res),A_or,C_or,b,f, Cn2,options)
 
 %% cropping coordinates 
 test = data2(:, :, 1);
